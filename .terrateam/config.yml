@@ -1,0 +1,80 @@
+access_control:
+  enabled: true
+  apply_require_all_dirspace_access: true
+  plan_require_all_dirspace_access: false
+  terrateam_config_update: ['*']
+  unlock: ['*']
+  policies:
+    - tag_query: ''
+      apply: ['*']
+      apply_autoapprove: []
+      apply_force: []
+      apply_with_superapproval: []
+      plan: ['*']
+      superapproval: []
+apply_requirements:
+  checks:
+    approved:
+      enabled: true
+      count: 1
+    merge_conflicts:
+      enabled: true
+    status_checks:
+      enabled: true
+      ignore_matching: []
+  create_pending_apply_check: true
+automerge: # Upon successfully applying all changes in a pull request, automatically merge the pull request and delete the branch.
+  enabled: true
+  delete_branch: true
+checkout_strategy: merge
+cost_estimation:
+  enabled: true
+  provider: infracost
+  currency: USD
+default_tf_version: latest
+destination_branches:
+dirs:
+  gke_shared_cluster:
+    workspaces:
+      development:
+        tags: [development]
+      non-production:
+        tags: [non-production]
+      production:
+        tags: [production]
+  nu_workforce:
+    workspaces:
+      development:
+        tags: [development]
+      non-production:
+        tags: [non-production]
+      production:
+        tags: [production]
+
+enabled: true
+hooks:
+  all:
+    pre: []
+    post: []
+  plan:
+    pre: []
+    post: []
+  apply:
+    pre: []
+    post: []
+parallel_runs: 3
+version: "1"
+when_modified:
+  file_patterns: ["**/*.tf", "**/*.tfvars"]
+  autoplan: true
+  autoplan_draft_pr: true
+  autoapply: false
+workflows:
+  - tag_query: ""
+    plan:
+      - type: init
+      - type: run
+        cmd: ['terraform', 'fmt', '-diff', '-check']
+      - type: plan
+      # - type: run
+      #   cmd: checkov...
